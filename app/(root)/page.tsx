@@ -3,32 +3,48 @@
 import { useState } from "react";
 
 const Page = () => {
-  const [info, setInfo] = useState("");
-  const [info2, setInfo2] = useState("");
+  const [currentWeatherData, setCurrentWeatherData] = useState("");
+  const [historicalWeatherData, setHistoricalWeatherData] = useState("");
   const [cityName, setCityName] = useState("");
 
   const fetchData = async () => {
-    // Fetch current data
-    const response = await fetch("/api/currentData", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ city: cityName }),
-    });
+    try {
+      // Fetch current data
+      const currentResponse = await fetch("/api/currentData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ city: cityName }),
+      });
 
-    const data = await response.json();
-    console.log(data);
-    setInfo(JSON.stringify(data));
+      if (!currentResponse.ok) {
+        throw new Error("Failed to fetch current weather data");
+      }
 
-    // Fetch historical data
-    const response2 = await fetch("/api/historicalData", {
-      method: "GET",
-    });
+      const currentData = await currentResponse.json();
+      console.log(currentData);
+      setCurrentWeatherData(JSON.stringify(currentData));
+    } catch (error) {
+      console.error("Error fetching current weather data:", error);
+    }
 
-    const data2 = await response2.json();
-    console.log(data2);
-    setInfo2(JSON.stringify(data2));
+    try {
+      // Fetch historical data
+      const historicalResponse = await fetch("/api/historicalData", {
+        method: "GET",
+      });
+
+      if (!historicalResponse.ok) {
+        throw new Error("Failed to fetch historical weather data");
+      }
+
+      const historicalData = await historicalResponse.json();
+      console.log(historicalData);
+      setHistoricalWeatherData(JSON.stringify(historicalData));
+    } catch (error) {
+      console.error("Error fetching historical weather data:", error);
+    }
   };
 
   return (
@@ -47,8 +63,8 @@ const Page = () => {
       >
         RUN!
       </button>
-      <h1>{info}</h1>
-      <h1>{info2}</h1>
+      <h1 className='border-b-4 border-black'>{currentWeatherData}</h1>
+      <h1>{historicalWeatherData}</h1>
     </>
   );
 };
