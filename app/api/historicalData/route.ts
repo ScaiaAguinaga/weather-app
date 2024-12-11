@@ -1,5 +1,7 @@
+import { NextRequest, NextResponse } from "next/server";
+
 const url =
-  "https://meteostat.p.rapidapi.com/point/hourly?lat=43.6667&lon=-79.4&alt=113&start=2020-01-01&end=2020-01-01&tz=America%2FToronto";
+  "https://meteostat.p.rapidapi.com/point/monthly?lat=52.5244&lon=13.4105&alt=43&start=2020-01-01&end=2020-12-31";
 
 const options = {
   method: "GET",
@@ -9,7 +11,11 @@ const options = {
   },
 };
 
-export async function GET() {
+export async function POST(req: NextRequest) {
+  const { lat, lon } = await req.json();
+
+  console.log(lat, lon);
+
   const response = await fetch(url, options);
   const data = await response.json();
 

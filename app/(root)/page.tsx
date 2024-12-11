@@ -9,7 +9,7 @@ const Page = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch current data
+      // Fetch current weather data
       const currentResponse = await fetch("/api/currentData", {
         method: "POST",
         headers: {
@@ -18,32 +18,43 @@ const Page = () => {
         body: JSON.stringify({ city: cityName }),
       });
 
+      // Check if the response is not ok
       if (!currentResponse.ok) {
         throw new Error("Failed to fetch current weather data");
       }
 
+      // Parse the JSON response
       const currentData = await currentResponse.json();
       console.log(currentData);
-      setCurrentWeatherData(JSON.stringify(currentData));
-    } catch (error) {
-      console.error("Error fetching current weather data:", error);
-    }
+      const cityLat = currentData.location.lat;
+      const cityLon = currentData.location.lon;
 
-    try {
-      // Fetch historical data
+      // Update state with the current weather data
+      setCurrentWeatherData(JSON.stringify(currentData));
+
+      // Fetch historical weather data using the latitude and longitude
       const historicalResponse = await fetch("/api/historicalData", {
-        method: "GET",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ lat: cityLat, lon: cityLon }),
       });
 
+      // Check if the response is not ok
       if (!historicalResponse.ok) {
         throw new Error("Failed to fetch historical weather data");
       }
 
+      // Parse the JSON response
       const historicalData = await historicalResponse.json();
       console.log(historicalData);
+
+      // Update state with the historical weather data
       setHistoricalWeatherData(JSON.stringify(historicalData));
     } catch (error) {
-      console.error("Error fetching historical weather data:", error);
+      // Handle any errors that occur during the fetch operations
+      console.error("Error fetching weather data:", error);
     }
   };
 
@@ -63,6 +74,7 @@ const Page = () => {
       >
         RUN!
       </button>
+
       <h1 className='border-b-4 border-black'>{currentWeatherData}</h1>
       <h1>{historicalWeatherData}</h1>
     </>
