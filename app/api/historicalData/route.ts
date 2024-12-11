@@ -1,23 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const url =
-  "https://meteostat.p.rapidapi.com/point/monthly?lat=52.5244&lon=13.4105&alt=43&start=2020-01-01&end=2020-12-31";
-
-const options = {
-  method: "GET",
-  headers: {
-    "x-rapidapi-key": process.env.X_RAPIDAPI_KEY as string,
-    "x-rapidapi-host": "meteostat.p.rapidapi.com",
-  },
-};
-
 export async function POST(req: NextRequest) {
-  const { lat, lon } = await req.json();
+  const APIKEY = process.env.X_RAPIDAPI_KEY;
 
-  console.log(lat, lon);
+  // Check if the API key is missing
+  if (!APIKEY) {
+    return NextResponse.json({ error: "API key is missing" }, { status: 500 });
+  }
 
-  const response = await fetch(url, options);
-  const data = await response.json();
+  try {
+    // Parse the request body to get latitude and longitude
+    const { lat, lon } = await req.json();
 
-  return new Response(JSON.stringify(data));
+    // Check if latitude or longitude is missing
+    if (!lat || !lon) {
+      return NextResponse.json(
+        { error: "Latitude or longitude is missing" },
+        { status: 400 }
+      );
+    }
+
+    // Make the API call to Meteostat to fetch historical weather data
+    const response = await fetch(
+      `https://meteostat.p.rapidapi.com/point/monthly?lat=${lat}&lon=${lon}&alt=43&start=2020-01-01&end=2020-12-31`,
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": APIKEY as string,
+          "x-rapidapi-host": "meteostat.p.rapidapi.com",
+        },
+      }
+    );
+
+    // Check if the response is not ok
+    if (!response.ok) {
+      throw new Error("Failed to fetch historical weather data");
+    }
+
+    // Parse the JSON response
+    const data = await response.json();
+
+    // Return the data as a JSON response with status 200
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    // Log the error to the console
+    console.error("Error fetching historical weather data:", error);
+
+    // Return an error message as a JSON response with status 500
+    return NextResponse.json(
+      { error: "Failed to fetch historical weather data" },
+      { status: 500 }
+    );
+  }
 }
