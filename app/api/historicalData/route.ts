@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * Fetches the historical weather data for requested latitude and longitude using the Meteostat API.
+ * Returns a JSON response with the weather data or an error message if the API key is missing.
+ */
+
 export async function POST(req: NextRequest) {
   const APIKEY = process.env.X_RAPIDAPI_KEY;
 
@@ -22,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     // Make the API call to Meteostat to fetch historical weather data
     const response = await fetch(
-      `https://meteostat.p.rapidapi.com/point/monthly?lat=${lat}&lon=${lon}&alt=43&start=2020-01-01&end=2020-12-31`,
+      `https://meteostat.p.rapidapi.com/point/monthly?lat=${lat}&lon=${lon}&alt=43&start=2020-01-01&end=2020-12-31&units=imperial`,
       {
         method: "GET",
         headers: {
