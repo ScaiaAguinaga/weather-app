@@ -8,7 +8,8 @@ import LineChart from '@/components/LineChart';
 const CityWeatherData = () => {
   const [latestData, setLatestData] = useState('');
   const [historicData, setHistoricData] = useState('');
-  const [tempAvg, setTempAvg] = useState([]);
+  const [tempAvgs, setTempAvgs] = useState([]);
+  const [startMonth, setStartMonth] = useState(0);
 
   const params = useParams();
   const cityName = params.cityName;
@@ -52,16 +53,18 @@ const CityWeatherData = () => {
         // Parse the JSON response
         const historicData = await historicRes.json();
 
+        // Update state with the weather data
+        setLatestData(latestData);
+        setHistoricData(historicData);
+
         // Extract tavg values from the historic data
         const tavgValues = historicData.data.map(
           (item: { tavg: number | null }) => item.tavg
         );
-        setTempAvg(tavgValues);
-        console.log(tavgValues);
+        setTempAvgs(tavgValues);
 
-        // Update state with the weather data
-        setLatestData(latestData);
-        setHistoricData(historicData);
+        // Extract the start month from the historic data
+        setStartMonth(historicData.data[0].date.slice(5, 7));
       } catch (error) {
         // Handle any errors that occur during the fetch operations
         console.error('Error fetching weather data:', error);
@@ -79,8 +82,9 @@ const CityWeatherData = () => {
       <div className='border-b-4 border-black'>
         Historical Weather Data: {JSON.stringify(historicData)}
       </div>
-      <div className='border-b-4 border-black'>Avg Temps: {tempAvg}</div>
-      <LineChart tempAvg={tempAvg} />
+      <div className='border-b-4 border-black'>Avg Temps: {tempAvgs}</div>
+      <div>{startMonth}</div>
+      <LineChart tempAvgs={tempAvgs} startMonth={startMonth} />
     </>
   );
 };

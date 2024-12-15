@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 
 export async function POST(req: NextRequest) {
-  const APIKEY = process.env.X_RAPIDAPI_KEY;
+  const APIKEY = process.env.X_RAPIDAPI_KEY as string;
 
   const currentDate = new Date();
 
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       {
         method: 'GET',
         headers: {
-          'x-rapidapi-key': APIKEY as string,
+          'x-rapidapi-key': APIKEY,
           'x-rapidapi-host': 'meteostat.p.rapidapi.com',
         },
       }
