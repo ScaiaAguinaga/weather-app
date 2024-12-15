@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Fetches the historical weather data for requested latitude and longitude using the Meteostat API.
@@ -8,9 +8,34 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const APIKEY = process.env.X_RAPIDAPI_KEY;
 
+  const currentDate = new Date();
+
+  // Start date is set to first day of current month last year
+  const start = {
+    year: currentDate.getFullYear() - 1,
+    month: (currentDate.getMonth() + 1).toString().padStart(2, '0'),
+    day: '01',
+  };
+
+  // Calculate the last day of the previous month
+  const lastDay = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    0
+  );
+
+  // End date is set to last day of previous month
+  const end = {
+    year: currentDate.getFullYear(),
+    month: (((currentDate.getMonth() + 11) % 12) + 1)
+      .toString()
+      .padStart(2, '0'),
+    day: lastDay.getDate(),
+  };
+
   // Check if the API key is missing
   if (!APIKEY) {
-    return NextResponse.json({ error: "API key is missing" }, { status: 500 });
+    return NextResponse.json({ error: 'API key is missing' }, { status: 500 });
   }
 
   try {
@@ -20,26 +45,26 @@ export async function POST(req: NextRequest) {
     // Check if latitude or longitude is missing
     if (!lat || !lon) {
       return NextResponse.json(
-        { error: "Latitude or longitude is missing" },
+        { error: 'Latitude or longitude is missing' },
         { status: 400 }
       );
     }
 
     // Make the API call to Meteostat to fetch historical weather data
     const response = await fetch(
-      `https://meteostat.p.rapidapi.com/point/monthly?lat=${lat}&lon=${lon}&alt=43&start=2020-01-01&end=2020-12-31&units=imperial`,
+      `https://meteostat.p.rapidapi.com/point/monthly?lat=${lat}&lon=${lon}&start=${start.year}-${start.month}-${start.day}&end=${end.year}-${end.month}-${end.day}&units=imperial`,
       {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "x-rapidapi-key": APIKEY as string,
-          "x-rapidapi-host": "meteostat.p.rapidapi.com",
+          'x-rapidapi-key': APIKEY as string,
+          'x-rapidapi-host': 'meteostat.p.rapidapi.com',
         },
       }
     );
 
     // Check if the response is not ok
     if (!response.ok) {
-      throw new Error("Failed to fetch historical weather data");
+      throw new Error('Failed to fetch historical weather data');
     }
 
     // Parse the JSON response
@@ -49,11 +74,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     // Log the error to the console
-    console.error("Error fetching historical weather data:", error);
+    console.error('Error fetching historical weather data:', error);
 
     // Return an error message as a JSON response with status 500
     return NextResponse.json(
-      { error: "Failed to fetch historical weather data" },
+      { error: 'Failed to fetch historical weather data' },
       { status: 500 }
     );
   }
