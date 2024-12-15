@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { populateData } from '@/utils/weatherData';
 
 import LineChart from '@/components/LineChart';
 
 const CityWeatherData = () => {
   const [latestData, setLatestData] = useState('');
   const [historicData, setHistoricData] = useState('');
-  const [tempAvgs, setTempAvgs] = useState([]);
+  const [tempAvgs, setTempAvgs] = useState<number[]>([]);
   const [startMonth, setStartMonth] = useState(0);
 
   const params = useParams();
@@ -61,7 +62,7 @@ const CityWeatherData = () => {
         const tavgValues = historicData.data.map(
           (item: { tavg: number | null }) => item.tavg
         );
-        setTempAvgs(tavgValues);
+        setTempAvgs(populateData({ data: tavgValues }));
 
         // Extract the start month from the historic data
         setStartMonth(historicData.data[0].date.slice(5, 7));
