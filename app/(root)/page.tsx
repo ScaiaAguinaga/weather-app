@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const Home = () => {
   const router = useRouter();
-  const [cityName, setCityName] = useState("");
+  const [cityName, setCityName] = useState('');
 
   // Handle key press event
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       // Check if cityName is not empty or null
-      if (cityName !== "" || cityName !== null) {
+      if (cityName !== '' || cityName !== null) {
         // Format the city name and route to the city page
         handleRouting(formatCityName(cityName));
       }
@@ -23,14 +23,14 @@ const Home = () => {
     return city
       .trim()
       .toLowerCase()
-      .replace(" ", "%20")
-      .replace("-", "%20")
-      .replace("_", "%20");
+      .replace(' ', '%20')
+      .replace('-', '%20')
+      .replace('_', '%20');
   };
 
   // Route to the city page with the formatted city name
   const handleRouting = (pathname: string) => {
-    console.log("Routing to city page");
+    console.log('Routing to city page');
     router.push(`/city/${pathname}`);
   };
 
