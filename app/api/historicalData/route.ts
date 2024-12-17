@@ -9,28 +9,19 @@ export async function POST(req: NextRequest) {
   const APIKEY = process.env.X_RAPIDAPI_KEY as string;
 
   const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
 
-  // Start date is set to first day of current month last year
+  // create start and end date for this year + previous 5 years
   const start = {
-    year: currentDate.getFullYear() - 1,
-    month: (currentDate.getMonth() + 1).toString().padStart(2, '0'),
+    year: currentYear - 5,
+    month: '01',
     day: '01',
   };
 
-  // Calculate the last day of the previous month
-  const lastDay = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    0
-  );
-
-  // End date is set to last day of previous month
   const end = {
     year: currentDate.getFullYear(),
-    month: (((currentDate.getMonth() + 11) % 12) + 1)
-      .toString()
-      .padStart(2, '0'),
-    day: lastDay.getDate(),
+    month: currentDate.getMonth().toString().padStart(2, '0'),
+    day: currentDate.getDate().toString().padStart(2, '0'),
   };
 
   // Check if the API key is missing

@@ -1,4 +1,10 @@
+'use client';
+
+import { useState } from 'react';
+
 import { Line } from 'react-chartjs-2';
+import { cityTempAvgData } from '@/interfaces/cityData';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -20,14 +26,11 @@ ChartJS.register(
   Legend
 );
 
-const LineChart = ({
-  tempAvgs,
-  startMonth,
-}: {
-  tempAvgs: number[];
-  startMonth: number;
-}) => {
-  const months = [
+const LineChart = ({ tempAvgs }: { tempAvgs: cityTempAvgData }) => {
+  const [selectedYear, setSelectedYear] =
+    useState<keyof cityTempAvgData>('currentYear');
+
+  const chartMonths = [
     'Jan',
     'Feb',
     'Mar',
@@ -42,14 +45,6 @@ const LineChart = ({
     'Dec',
   ];
 
-  // Create chartMonths array starting from startMonth-1 and including the next 11 months
-  const chartMonths = [
-    // Include the months from startMonth to the end of the year
-    ...months.slice(startMonth - 1),
-    // Include the months from the start of the year to startMonth
-    ...months.slice(0, startMonth - 1),
-  ].slice(0, 12);
-
   const options = {
     scales: {
       y: {
@@ -63,16 +58,56 @@ const LineChart = ({
     labels: [...chartMonths],
     datasets: [
       {
-        label: 'Average Temperature',
-        data: tempAvgs,
-        borderColor: 'rgb(255, 83, 73)',
+        label: 'Year One',
+        data: tempAvgs[selectedYear],
+        borderColor: 'rgb(255, 0, 0)',
       },
     ],
   };
 
   return (
-    <div className='w-1/2'>
-      <Line options={options} data={lineChartData} />
+    <div className='bg-gray-400 p-5'>
+      <div className='grid grid-cols-6 gap-2 mb-4'>
+        <button
+          onClick={() => setSelectedYear('currentYear')}
+          className='p-2 bg-white rounded-xl'
+        >
+          current
+        </button>
+        <button
+          onClick={() => setSelectedYear('yearOne')}
+          className='p-2 bg-white rounded-xl'
+        >
+          year 1
+        </button>
+        <button
+          onClick={() => setSelectedYear('yearTwo')}
+          className='p-2 bg-white rounded-xl'
+        >
+          year 2
+        </button>
+        <button
+          onClick={() => setSelectedYear('yearThree')}
+          className='p-2 bg-white rounded-xl'
+        >
+          year 3
+        </button>
+        <button
+          onClick={() => setSelectedYear('yearFour')}
+          className='p-2 bg-white rounded-xl'
+        >
+          year 4
+        </button>
+        <button
+          onClick={() => setSelectedYear('yearFive')}
+          className='p-2 bg-white rounded-xl'
+        >
+          year 5
+        </button>
+      </div>
+      <div className='bg-white'>
+        <Line options={options} data={lineChartData} />
+      </div>
     </div>
   );
 };

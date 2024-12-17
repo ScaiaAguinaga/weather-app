@@ -2,15 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { populateData } from '@/utils/weatherData';
 
 import LineChart from '@/components/LineChart';
+
+import { cityTempAvgData } from '@/interfaces/cityData';
 
 const CityWeatherData = () => {
   const [latestData, setLatestData] = useState('');
   const [historicData, setHistoricData] = useState('');
-  const [tempAvgs, setTempAvgs] = useState<number[]>([]);
-  const [startMonth, setStartMonth] = useState(0);
+  const [tempAvgs, setTempAvgs] = useState<cityTempAvgData>({
+    yearFive: [],
+    yearFour: [],
+    yearThree: [],
+    yearTwo: [],
+    yearOne: [],
+    currentYear: [],
+  });
 
   const params = useParams();
   const cityName = params.cityName;
@@ -58,14 +65,18 @@ const CityWeatherData = () => {
         setLatestData(latestData);
         setHistoricData(historicData);
 
-        // Extract tavg values from the historic data
-        const tavgValues = historicData.data.map(
+        // Extract average temperature values from the historic data
+        const tempAvgVals = historicData.data.map(
           (item: { tavg: number | null }) => item.tavg
         );
-        setTempAvgs(populateData({ data: tavgValues }));
-
-        // Extract the start month from the historic data
-        setStartMonth(historicData.data[0].date.slice(5, 7));
+        setTempAvgs({
+          yearFive: tempAvgVals.slice(0, 12),
+          yearFour: tempAvgVals.slice(12, 24),
+          yearThree: tempAvgVals.slice(24, 36),
+          yearTwo: tempAvgVals.slice(36, 48),
+          yearOne: tempAvgVals.slice(48, 60),
+          currentYear: tempAvgVals.slice(60),
+        });
       } catch (error) {
         // Handle any errors that occur during the fetch operations
         console.error('Error fetching weather data:', error);
@@ -83,9 +94,13 @@ const CityWeatherData = () => {
       <div className='border-b-4 border-black'>
         Historical Weather Data: {JSON.stringify(historicData)}
       </div>
-      <div className='border-b-4 border-black'>Avg Temps: {tempAvgs}</div>
-      <div>{startMonth}</div>
-      <LineChart tempAvgs={tempAvgs} startMonth={startMonth} />
+      <div className='border-b-4 border-black'>
+        Avg Temps: {JSON.stringify(tempAvgs)}
+      </div>
+
+      <div className='w-1/2'>
+        <LineChart tempAvgs={tempAvgs} />
+      </div>
     </>
   );
 };
