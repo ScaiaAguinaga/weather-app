@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import LineChart from '@/components/LineChart';
 
 import { cityTempAvgData } from '@/interfaces/cityData';
+import { populateData } from '@/utils/weatherData';
 
 const CityWeatherData = () => {
   const [latestData, setLatestData] = useState('');
@@ -69,13 +70,18 @@ const CityWeatherData = () => {
         const tempAvgVals = historicData.data.map(
           (item: { tavg: number | null }) => item.tavg
         );
+
+        console.log(tempAvgVals);
+        const newTemps = populateData({ data: tempAvgVals });
+        console.log(newTemps);
+
         setTempAvgs({
-          yearFive: tempAvgVals.slice(0, 12),
-          yearFour: tempAvgVals.slice(12, 24),
-          yearThree: tempAvgVals.slice(24, 36),
-          yearTwo: tempAvgVals.slice(36, 48),
-          yearOne: tempAvgVals.slice(48, 60),
-          currentYear: tempAvgVals.slice(60),
+          yearFive: newTemps.slice(0, 12),
+          yearFour: newTemps.slice(12, 24),
+          yearThree: newTemps.slice(24, 36),
+          yearTwo: newTemps.slice(36, 48),
+          yearOne: newTemps.slice(48, 60),
+          currentYear: newTemps.slice(60),
         });
       } catch (error) {
         // Handle any errors that occur during the fetch operations

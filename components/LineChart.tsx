@@ -62,6 +62,7 @@ const LineChart = ({ tempAvgs }: { tempAvgs: cityTempAvgData }) => {
         data: tempAvgs[selectedYear],
         borderColor: 'rgb(255, 0, 0)',
       },
+
     ],
   };
 
